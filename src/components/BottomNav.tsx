@@ -1,4 +1,4 @@
-import { Home, Calendar, PiggyBank, Trophy, Settings } from 'lucide-react';
+import { Home, Calendar, PiggyBank, Bot, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -6,7 +6,7 @@ const navItems = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Calendar, label: 'Calendar', path: '/calendar' },
   { icon: PiggyBank, label: 'Savings', path: '/savings' },
-  { icon: Trophy, label: 'Rewards', path: '/achievements' },
+  { icon: Bot, label: 'Assistant', path: '/assistant' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
