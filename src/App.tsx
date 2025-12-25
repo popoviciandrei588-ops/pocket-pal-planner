@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import CalendarPage from "./pages/Calendar";
 import SavingsPage from "./pages/Savings";
 import AchievementsPage from "./pages/Achievements";
+import AssistantPage from "./pages/Assistant";
 import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/savings" element={<SavingsPage />} />
             <Route path="/achievements" element={<AchievementsPage />} />
+            <Route path="/assistant" element={<AssistantPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
