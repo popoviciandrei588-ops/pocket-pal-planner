@@ -5,6 +5,7 @@ import { BottomNav } from '@/components/BottomNav';
 import { SavingsGoalCard } from '@/components/SavingsGoalCard';
 import { IncomeExpenseChart } from '@/components/IncomeExpenseChart';
 import { ExpenseChart } from '@/components/ExpenseChart';
+import { AIAssistant } from '@/components/AIAssistant';
 import { useFinance } from '@/context/FinanceContext';
 import { ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -66,6 +67,9 @@ const Index = () => {
 
       {/* FAB for adding transactions */}
       <AddTransactionSheet />
+
+      {/* AI Assistant */}
+      <AIAssistant />
 
       {/* Bottom Navigation */}
       <BottomNav />
