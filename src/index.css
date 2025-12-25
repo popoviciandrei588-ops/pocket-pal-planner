@@ -6,59 +6,59 @@
 
 @layer base {
   :root {
-    --background: 220 20% 6%;
+    --background: 225 25% 5%;
     --foreground: 0 0% 98%;
 
-    --card: 220 18% 10%;
+    --card: 225 22% 9%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 220 18% 10%;
+    --popover: 225 22% 9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 160 84% 45%;
-    --primary-foreground: 220 20% 6%;
+    --primary: 165 80% 48%;
+    --primary-foreground: 225 25% 5%;
 
-    --secondary: 220 18% 16%;
+    --secondary: 225 20% 14%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 225 18% 16%;
+    --muted-foreground: 225 12% 50%;
 
-    --accent: 160 70% 40%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 45 95% 55%;
+    --accent-foreground: 225 25% 5%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 15% 18%;
-    --input: 220 15% 20%;
-    --ring: 160 84% 45%;
+    --border: 225 18% 15%;
+    --input: 225 18% 18%;
+    --ring: 165 80% 48%;
 
     --radius: 1rem;
 
     /* Custom finance app tokens */
-    --income: 160 84% 45%;
-    --expense: 0 72% 51%;
-    --savings: 45 93% 58%;
-    --achievement: 280 68% 60%;
+    --income: 165 80% 48%;
+    --expense: 0 75% 55%;
+    --savings: 45 95% 55%;
+    --achievement: 285 70% 62%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(160 84% 45%), hsl(180 70% 40%));
-    --gradient-card: linear-gradient(145deg, hsl(220 18% 12%), hsl(220 18% 8%));
-    --gradient-gold: linear-gradient(135deg, hsl(45 93% 58%), hsl(35 93% 50%));
+    --gradient-primary: linear-gradient(135deg, hsl(165 80% 48%), hsl(185 75% 42%));
+    --gradient-card: linear-gradient(145deg, hsl(225 22% 11%), hsl(225 22% 7%));
+    --gradient-gold: linear-gradient(135deg, hsl(45 95% 55%), hsl(35 95% 48%));
     
     /* Shadows */
-    --shadow-glow: 0 0 40px hsl(160 84% 45% / 0.15);
-    --shadow-card: 0 4px 24px hsl(0 0% 0% / 0.3);
+    --shadow-glow: 0 0 50px hsl(165 80% 48% / 0.2);
+    --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.4);
 
-    --sidebar-background: 220 18% 10%;
+    --sidebar-background: 225 22% 9%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 160 84% 45%;
-    --sidebar-primary-foreground: 220 20% 6%;
-    --sidebar-accent: 220 18% 16%;
+    --sidebar-primary: 165 80% 48%;
+    --sidebar-primary-foreground: 225 25% 5%;
+    --sidebar-accent: 225 20% 14%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 220 15% 18%;
-    --sidebar-ring: 160 84% 45%;
+    --sidebar-border: 225 18% 15%;
+    --sidebar-ring: 165 80% 48%;
   }
 }
 
