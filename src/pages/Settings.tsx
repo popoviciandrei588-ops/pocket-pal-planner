@@ -5,16 +5,36 @@ import { useFinance } from '@/context/FinanceContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { Trophy, Star, ChevronRight, Moon, Sun, LogOut, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
   const { achievements } = useFinance();
   const { theme, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const unlockedCount = achievements.filter(a => a.unlocked).length;
   const totalCount = achievements.length;
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: 'Signed out',
+        description: 'You have been signed out successfully.',
+      });
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to sign out',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-28">
@@ -94,7 +114,7 @@ export default function SettingsPage() {
             <Button
               variant="outline"
               className="w-full gap-2 text-destructive hover:text-destructive"
-              onClick={signOut}
+              onClick={handleSignOut}
             >
               <LogOut className="w-4 h-4" />
               Sign Out
