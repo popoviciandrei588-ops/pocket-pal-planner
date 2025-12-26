@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -147,6 +147,12 @@ const Auth: React.FC = () => {
               </form>
             </TabsContent>
           </Tabs>
+          
+          <div className="mt-6 text-center">
+            <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Continue without an account
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
