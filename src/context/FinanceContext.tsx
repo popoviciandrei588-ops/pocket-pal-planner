@@ -20,13 +20,7 @@ interface FinanceContextType {
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
-const initialTransactions: Transaction[] = [
-  { id: '1', amount: 5000, type: 'income', category: 'Salary', description: 'Monthly salary', date: new Date(2025, 11, 1), icon: '💼' },
-  { id: '2', amount: 120, type: 'expense', category: 'Food', description: 'Grocery shopping', date: new Date(2025, 11, 5), icon: '🍔' },
-  { id: '3', amount: 50, type: 'expense', category: 'Transport', description: 'Gas', date: new Date(2025, 11, 10), icon: '🚗' },
-  { id: '4', amount: 200, type: 'expense', category: 'Entertainment', description: 'Concert tickets', date: new Date(2025, 11, 15), icon: '🎮' },
-  { id: '5', amount: 800, type: 'income', category: 'Freelance', description: 'Web project', date: new Date(2025, 11, 20), icon: '💻' },
-];
+const initialTransactions: Transaction[] = [];
 
 const initialSavingsGoals: SavingsGoal[] = [
   { id: '1', name: 'Emergency Fund', targetAmount: 10000, currentAmount: 6500, icon: '🏦', color: 'primary' },
