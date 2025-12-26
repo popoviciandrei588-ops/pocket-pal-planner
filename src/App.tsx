@@ -28,14 +28,14 @@ const App = () => (
             <Sonner position="top-center" />
             <BrowserRouter>
               <Routes>
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/" element={<Index />} />
-              <Route path="/calendar" element={<CalendarPage />} />
-              <Route path="/savings" element={<SavingsPage />} />
-              <Route path="/achievements" element={<AchievementsPage />} />
-              <Route path="/assistant" element={<AssistantPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/recurring" element={<RecurringPage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/" element={<Index />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/savings" element={<SavingsPage />} />
+                <Route path="/achievements" element={<AchievementsPage />} />
+                <Route path="/assistant" element={<AssistantPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/recurring" element={<RecurringPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
