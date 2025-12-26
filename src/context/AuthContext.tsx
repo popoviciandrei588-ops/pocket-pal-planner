@@ -66,9 +66,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    // Use local sign-out so it always clears the device session even if the server session is already gone
+    // We want a best-effort sign out:
+    // - Clear device session even if backend session is already missing
+    // - Avoid blocking UI with "session_not_found"
+    const { data } = await supabase.auth.getSession();
+
+    // If there is no session in memory, just make sure storage is cleared.
+    if (!data.session) {
+      setSession(null);
+      setUser(null);
+      return;
+    }
+
     const { error } = await supabase.auth.signOut({ scope: 'local' });
-    if (error) throw error;
+
+    // Some environments can return session_not_found even though we still want to clear locally.
+    const code = (error as any)?.code;
+    const msg = (error as any)?.message as string | undefined;
+    if (error && code !== 'session_not_found' && !msg?.includes('session_not_found')) {
+      throw error;
+    }
+
+    // Force-clear stored token in localStorage (supabase-js storage key)
+    try {
+      const url = import.meta.env.VITE_SUPABASE_URL;
+      const ref = url ? new URL(url).hostname.split('.')[0] : null;
+      if (ref) {
+        const prefix = `sb-${ref}-auth-token`;
+        const keysToRemove: string[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(prefix)) keysToRemove.push(k);
+        }
+        keysToRemove.forEach((k) => localStorage.removeItem(k));
+      }
+    } catch {
+      // ignore
+    }
+
+    setSession(null);
+    setUser(null);
   };
 
   return (
