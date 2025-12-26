@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FinanceProvider } from "@/context/FinanceContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import Index from "./pages/Index";
 import CalendarPage from "./pages/Calendar";
 import SavingsPage from "./pages/Savings";
@@ -26,6 +27,7 @@ const App = () => (
           <FinanceProvider>
             <Toaster />
             <Sonner position="top-center" />
+            <PWAInstallPrompt />
             <BrowserRouter>
               <Routes>
                 <Route path="/auth" element={<AuthPage />} />
