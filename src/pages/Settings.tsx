@@ -2,11 +2,14 @@ import { BottomNav } from '@/components/BottomNav';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { AddTransactionSheet } from '@/components/AddTransactionSheet';
 import { useFinance } from '@/context/FinanceContext';
-import { Trophy, Star, ChevronRight } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
+import { Trophy, Star, ChevronRight, Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Switch } from '@/components/ui/switch';
 
 export default function SettingsPage() {
   const { achievements } = useFinance();
+  const { theme, toggleTheme } = useTheme();
   const unlockedCount = achievements.filter(a => a.unlocked).length;
   const totalCount = achievements.length;
 
@@ -22,6 +25,32 @@ export default function SettingsPage() {
 
       {/* Main Content */}
       <main className="px-4 space-y-6">
+        {/* Theme Toggle */}
+        <div className="glass-card rounded-2xl p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                {theme === 'dark' ? (
+                  <Moon className="w-6 h-6 text-primary" />
+                ) : (
+                  <Sun className="w-6 h-6 text-primary" />
+                )}
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">Appearance</h3>
+                <p className="text-sm text-muted-foreground">
+                  {theme === 'dark' ? 'Dark mode' : 'Light mode'}
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={theme === 'light'}
+              onCheckedChange={toggleTheme}
+              className="data-[state=checked]:bg-primary"
+            />
+          </div>
+        </div>
+
         {/* Currency Selector */}
         <CurrencySelector />
 
