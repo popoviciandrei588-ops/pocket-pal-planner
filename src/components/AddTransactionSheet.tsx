@@ -54,7 +54,7 @@ export function AddTransactionSheet() {
         <Button 
           size="icon" 
           className="fixed z-50 w-14 h-14 rounded-full shadow-xl glow"
-          style={{ bottom: 'calc(5.5rem + env(safe-area-inset-bottom, 0px))', right: '1rem' }}
+          style={{ bottom: 'calc(7rem + env(safe-area-inset-bottom, 0px))', right: '1rem' }}
         >
           <Plus className="w-6 h-6" />
         </Button>
