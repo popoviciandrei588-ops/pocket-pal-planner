@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Transaction, SavingsGoal, Achievement, Currency, CURRENCIES } from '@/types/finance';
+import { Transaction, SavingsGoal, Achievement, Currency, CURRENCIES, RecurringTransaction, RecurringFrequency } from '@/types/finance';
+import { addDays, addWeeks, addMonths, addYears, isAfter, isBefore, startOfDay } from 'date-fns';
 
 interface FinanceContextType {
   transactions: Transaction[];
   savingsGoals: SavingsGoal[];
   achievements: Achievement[];
+  recurringTransactions: RecurringTransaction[];
   currency: Currency;
   setCurrency: (currency: Currency) => void;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
@@ -13,6 +15,9 @@ interface FinanceContextType {
   addSavingsGoal: (goal: Omit<SavingsGoal, 'id'>) => void;
   updateSavingsGoal: (id: string, amount: number) => void;
   deleteSavingsGoal: (id: string) => void;
+  addRecurringTransaction: (recurring: Omit<RecurringTransaction, 'id'>) => void;
+  toggleRecurringTransaction: (id: string) => void;
+  deleteRecurringTransaction: (id: string) => void;
   totalBalance: number;
   totalIncome: number;
   totalExpenses: number;
@@ -25,6 +30,7 @@ const STORAGE_KEYS = {
   savingsGoals: 'moneytracker_savingsGoals',
   achievements: 'moneytracker_achievements',
   currency: 'moneytracker_currency',
+  recurringTransactions: 'moneytracker_recurring',
 };
 
 const defaultSavingsGoals: SavingsGoal[] = [
@@ -47,9 +53,15 @@ const loadFromStorage = <T,>(key: string, defaultValue: T): T => {
     const stored = localStorage.getItem(key);
     if (stored) {
       const parsed = JSON.parse(stored);
-      // Handle date conversion for transactions
       if (key === STORAGE_KEYS.transactions) {
         return parsed.map((t: any) => ({ ...t, date: new Date(t.date) })) as T;
+      }
+      if (key === STORAGE_KEYS.recurringTransactions) {
+        return parsed.map((r: any) => ({ 
+          ...r, 
+          startDate: new Date(r.startDate),
+          nextDue: new Date(r.nextDue)
+        })) as T;
       }
       return parsed;
     }
@@ -67,6 +79,16 @@ const saveToStorage = <T,>(key: string, value: T): void => {
   }
 };
 
+const getNextDueDate = (currentDate: Date, frequency: RecurringFrequency): Date => {
+  switch (frequency) {
+    case 'daily': return addDays(currentDate, 1);
+    case 'weekly': return addWeeks(currentDate, 1);
+    case 'monthly': return addMonths(currentDate, 1);
+    case 'yearly': return addYears(currentDate, 1);
+    default: return addMonths(currentDate, 1);
+  }
+};
+
 export function FinanceProvider({ children }: { children: ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>(() => 
     loadFromStorage(STORAGE_KEYS.transactions, [])
@@ -80,6 +102,51 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   const [currency, setCurrencyState] = useState<Currency>(() => 
     loadFromStorage(STORAGE_KEYS.currency, CURRENCIES[0])
   );
+  const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>(() => 
+    loadFromStorage(STORAGE_KEYS.recurringTransactions, [])
+  );
+
+  // Process recurring transactions on load
+  useEffect(() => {
+    const today = startOfDay(new Date());
+    let hasChanges = false;
+    const newTransactions: Transaction[] = [];
+
+    const updatedRecurring = recurringTransactions.map(recurring => {
+      if (!recurring.isActive) return recurring;
+
+      let nextDue = new Date(recurring.nextDue);
+      while (isBefore(nextDue, today) || nextDue.getTime() === today.getTime()) {
+        // Create transaction for this due date
+        newTransactions.push({
+          id: `${recurring.id}-${nextDue.getTime()}`,
+          amount: recurring.amount,
+          type: recurring.type,
+          category: recurring.category,
+          description: recurring.description,
+          date: nextDue,
+          icon: recurring.icon,
+          isRecurring: true,
+          recurringId: recurring.id,
+        });
+        nextDue = getNextDueDate(nextDue, recurring.frequency);
+        hasChanges = true;
+      }
+
+      return { ...recurring, nextDue };
+    });
+
+    if (hasChanges) {
+      // Only add transactions that don't already exist
+      const existingIds = new Set(transactions.map(t => t.id));
+      const uniqueNewTransactions = newTransactions.filter(t => !existingIds.has(t.id));
+      
+      if (uniqueNewTransactions.length > 0) {
+        setTransactions(prev => [...uniqueNewTransactions, ...prev]);
+      }
+      setRecurringTransactions(updatedRecurring);
+    }
+  }, []);
 
   // Autosave transactions
   useEffect(() => {
@@ -100,6 +167,11 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     saveToStorage(STORAGE_KEYS.currency, currency);
   }, [currency]);
+
+  // Autosave recurring transactions
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.recurringTransactions, recurringTransactions);
+  }, [recurringTransactions]);
 
   const setCurrency = (newCurrency: Currency) => {
     setCurrencyState(newCurrency);
@@ -155,12 +227,43 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     setSavingsGoals(prev => prev.filter(g => g.id !== id));
   };
 
+  const addRecurringTransaction = (recurring: Omit<RecurringTransaction, 'id'>) => {
+    const newRecurring = {
+      ...recurring,
+      id: Date.now().toString(),
+    };
+    setRecurringTransactions(prev => [...prev, newRecurring]);
+
+    // Also add the first transaction immediately
+    addTransaction({
+      amount: recurring.amount,
+      type: recurring.type,
+      category: recurring.category,
+      description: recurring.description,
+      date: new Date(),
+      icon: recurring.icon,
+      isRecurring: true,
+      recurringId: newRecurring.id,
+    });
+  };
+
+  const toggleRecurringTransaction = (id: string) => {
+    setRecurringTransactions(prev =>
+      prev.map(r => r.id === id ? { ...r, isActive: !r.isActive } : r)
+    );
+  };
+
+  const deleteRecurringTransaction = (id: string) => {
+    setRecurringTransactions(prev => prev.filter(r => r.id !== id));
+  };
+
   return (
     <FinanceContext.Provider
       value={{
         transactions,
         savingsGoals,
         achievements,
+        recurringTransactions,
         currency,
         setCurrency,
         addTransaction,
@@ -169,6 +272,9 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         addSavingsGoal,
         updateSavingsGoal,
         deleteSavingsGoal,
+        addRecurringTransaction,
+        toggleRecurringTransaction,
+        deleteRecurringTransaction,
         totalBalance,
         totalIncome,
         totalExpenses,
