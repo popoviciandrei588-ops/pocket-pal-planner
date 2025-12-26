@@ -33,11 +33,7 @@ const STORAGE_KEYS = {
   recurringTransactions: 'moneytracker_recurring',
 };
 
-const defaultSavingsGoals: SavingsGoal[] = [
-  { id: '1', name: 'Emergency Fund', targetAmount: 10000, currentAmount: 0, icon: '🏦', color: 'primary' },
-  { id: '2', name: 'Vacation', targetAmount: 3000, currentAmount: 0, icon: '✈️', color: 'savings' },
-  { id: '3', name: 'New Laptop', targetAmount: 2000, currentAmount: 0, icon: '💻', color: 'achievement' },
-];
+const defaultSavingsGoals: SavingsGoal[] = [];
 
 const defaultAchievements: Achievement[] = [
   { id: '1', name: 'First Steps', description: 'Add your first transaction', icon: '🎯', unlocked: false, progress: 0, maxProgress: 1 },
