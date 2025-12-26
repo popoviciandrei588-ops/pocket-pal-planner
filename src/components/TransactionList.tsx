@@ -1,17 +1,23 @@
+import { useState } from 'react';
 import { useFinance } from '@/context/FinanceContext';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Pencil } from 'lucide-react';
 import { Button } from './ui/button';
+import { EditTransactionSheet } from './EditTransactionSheet';
+import { Transaction } from '@/types/finance';
 
 interface TransactionListProps {
   limit?: number;
   showDelete?: boolean;
+  showEdit?: boolean;
   filterDate?: Date;
 }
 
-export function TransactionList({ limit, showDelete = false, filterDate }: TransactionListProps) {
+export function TransactionList({ limit, showDelete = false, showEdit = false, filterDate }: TransactionListProps) {
   const { transactions, currency, deleteTransaction } = useFinance();
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [editSheetOpen, setEditSheetOpen] = useState(false);
 
   let filteredTransactions = [...transactions];
   
@@ -32,6 +38,11 @@ export function TransactionList({ limit, showDelete = false, filterDate }: Trans
     }).format(amount);
   };
 
+  const handleEdit = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+    setEditSheetOpen(true);
+  };
+
   if (displayTransactions.length === 0) {
     return (
       <div className="text-center py-8">
@@ -41,48 +52,67 @@ export function TransactionList({ limit, showDelete = false, filterDate }: Trans
   }
 
   return (
-    <div className="space-y-3">
-      {displayTransactions.map((transaction, index) => (
-        <div
-          key={transaction.id}
-          className="glass-card rounded-xl p-4 flex items-center gap-4 animate-slide-up"
-          style={{ animationDelay: `${index * 50}ms` }}
-        >
-          <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-2xl">
-            {transaction.icon}
-          </div>
-          
-          <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-foreground truncate">
-              {transaction.description}
-            </h4>
-            <p className="text-sm text-muted-foreground">
-              {transaction.category} • {format(transaction.date, 'MMM d')}
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <p className={cn(
-              "font-bold text-lg",
-              transaction.type === 'income' ? 'text-income' : 'text-expense'
-            )}>
-              {transaction.type === 'income' ? '+' : '-'}
-              {currency.symbol}{formatAmount(transaction.amount)}
-            </p>
+    <>
+      <div className="space-y-3">
+        {displayTransactions.map((transaction, index) => (
+          <div
+            key={transaction.id}
+            className="glass-card rounded-xl p-4 flex items-center gap-4 animate-slide-up"
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-2xl">
+              {transaction.icon}
+            </div>
             
-            {showDelete && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => deleteTransaction(transaction.id)}
-                className="text-muted-foreground hover:text-expense"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            )}
+            <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-foreground truncate">
+                {transaction.description}
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                {transaction.category} • {format(transaction.date, 'MMM d')}
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <p className={cn(
+                "font-bold text-lg",
+                transaction.type === 'income' ? 'text-income' : 'text-expense'
+              )}>
+                {transaction.type === 'income' ? '+' : '-'}
+                {currency.symbol}{formatAmount(transaction.amount)}
+              </p>
+              
+              {showEdit && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleEdit(transaction)}
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              )}
+              
+              {showDelete && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => deleteTransaction(transaction.id)}
+                  className="text-muted-foreground hover:text-expense"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+
+      <EditTransactionSheet
+        transaction={editingTransaction}
+        open={editSheetOpen}
+        onOpenChange={setEditSheetOpen}
+      />
+    </>
   );
 }

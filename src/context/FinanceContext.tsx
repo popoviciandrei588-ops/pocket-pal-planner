@@ -8,6 +8,7 @@ interface FinanceContextType {
   currency: Currency;
   setCurrency: (currency: Currency) => void;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
+  updateTransaction: (id: string, transaction: Partial<Omit<Transaction, 'id'>>) => void;
   deleteTransaction: (id: string) => void;
   addSavingsGoal: (goal: Omit<SavingsGoal, 'id'>) => void;
   updateSavingsGoal: (id: string, amount: number) => void;
@@ -66,6 +67,12 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     setTransactions(prev => [newTransaction, ...prev]);
   };
 
+  const updateTransaction = (id: string, updates: Partial<Omit<Transaction, 'id'>>) => {
+    setTransactions(prev =>
+      prev.map(t => (t.id === id ? { ...t, ...updates } : t))
+    );
+  };
+
   const deleteTransaction = (id: string) => {
     setTransactions(prev => prev.filter(t => t.id !== id));
   };
@@ -101,6 +108,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         currency,
         setCurrency,
         addTransaction,
+        updateTransaction,
         deleteTransaction,
         addSavingsGoal,
         updateSavingsGoal,
