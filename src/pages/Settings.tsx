@@ -3,13 +3,16 @@ import { CurrencySelector } from '@/components/CurrencySelector';
 import { AddTransactionSheet } from '@/components/AddTransactionSheet';
 import { useFinance } from '@/context/FinanceContext';
 import { useTheme } from '@/context/ThemeContext';
-import { Trophy, Star, ChevronRight, Moon, Sun } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Trophy, Star, ChevronRight, Moon, Sun, LogOut, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 
 export default function SettingsPage() {
   const { achievements } = useFinance();
   const { theme, toggleTheme } = useTheme();
+  const { user, signOut } = useAuth();
   const unlockedCount = achievements.filter(a => a.unlocked).length;
   const totalCount = achievements.length;
 
@@ -73,6 +76,27 @@ export default function SettingsPage() {
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </Link>
+
+        {/* Account Section */}
+        <div className="glass-card rounded-2xl p-4 space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+              <User className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-foreground">Account</h3>
+              <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            className="w-full gap-2 text-destructive hover:text-destructive"
+            onClick={signOut}
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </Button>
+        </div>
 
         {/* App Info */}
         <div className="text-center py-6">
