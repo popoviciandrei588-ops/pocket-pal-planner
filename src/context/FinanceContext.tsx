@@ -20,28 +20,90 @@ interface FinanceContextType {
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
-const initialTransactions: Transaction[] = [];
+const STORAGE_KEYS = {
+  transactions: 'moneytracker_transactions',
+  savingsGoals: 'moneytracker_savingsGoals',
+  achievements: 'moneytracker_achievements',
+  currency: 'moneytracker_currency',
+};
 
-const initialSavingsGoals: SavingsGoal[] = [
-  { id: '1', name: 'Emergency Fund', targetAmount: 10000, currentAmount: 6500, icon: '🏦', color: 'primary' },
-  { id: '2', name: 'Vacation', targetAmount: 3000, currentAmount: 1200, icon: '✈️', color: 'savings' },
-  { id: '3', name: 'New Laptop', targetAmount: 2000, currentAmount: 800, icon: '💻', color: 'achievement' },
+const defaultSavingsGoals: SavingsGoal[] = [
+  { id: '1', name: 'Emergency Fund', targetAmount: 10000, currentAmount: 0, icon: '🏦', color: 'primary' },
+  { id: '2', name: 'Vacation', targetAmount: 3000, currentAmount: 0, icon: '✈️', color: 'savings' },
+  { id: '3', name: 'New Laptop', targetAmount: 2000, currentAmount: 0, icon: '💻', color: 'achievement' },
 ];
 
-const initialAchievements: Achievement[] = [
-  { id: '1', name: 'First Steps', description: 'Add your first transaction', icon: '🎯', unlocked: true, unlockedAt: new Date(), progress: 1, maxProgress: 1 },
-  { id: '2', name: 'Saver', description: 'Save $1,000 total', icon: '💎', unlocked: true, unlockedAt: new Date(), progress: 1000, maxProgress: 1000 },
-  { id: '3', name: 'Budget Master', description: 'Track 50 transactions', icon: '👑', unlocked: false, progress: 5, maxProgress: 50 },
+const defaultAchievements: Achievement[] = [
+  { id: '1', name: 'First Steps', description: 'Add your first transaction', icon: '🎯', unlocked: false, progress: 0, maxProgress: 1 },
+  { id: '2', name: 'Saver', description: 'Save $1,000 total', icon: '💎', unlocked: false, progress: 0, maxProgress: 1000 },
+  { id: '3', name: 'Budget Master', description: 'Track 50 transactions', icon: '👑', unlocked: false, progress: 0, maxProgress: 50 },
   { id: '4', name: 'Goal Getter', description: 'Complete a savings goal', icon: '🏆', unlocked: false, progress: 0, maxProgress: 1 },
-  { id: '5', name: 'Streak Champion', description: 'Log transactions for 7 days in a row', icon: '🔥', unlocked: false, progress: 3, maxProgress: 7 },
-  { id: '6', name: 'Big Saver', description: 'Save $10,000 total', icon: '💰', unlocked: false, progress: 6500, maxProgress: 10000 },
+  { id: '5', name: 'Streak Champion', description: 'Log transactions for 7 days in a row', icon: '🔥', unlocked: false, progress: 0, maxProgress: 7 },
+  { id: '6', name: 'Big Saver', description: 'Save $10,000 total', icon: '💰', unlocked: false, progress: 0, maxProgress: 10000 },
 ];
+
+const loadFromStorage = <T,>(key: string, defaultValue: T): T => {
+  try {
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Handle date conversion for transactions
+      if (key === STORAGE_KEYS.transactions) {
+        return parsed.map((t: any) => ({ ...t, date: new Date(t.date) })) as T;
+      }
+      return parsed;
+    }
+  } catch (error) {
+    console.error(`Error loading ${key} from storage:`, error);
+  }
+  return defaultValue;
+};
+
+const saveToStorage = <T,>(key: string, value: T): void => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error(`Error saving ${key} to storage:`, error);
+  }
+};
 
 export function FinanceProvider({ children }: { children: ReactNode }) {
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
-  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(initialSavingsGoals);
-  const [achievements, setAchievements] = useState<Achievement[]>(initialAchievements);
-  const [currency, setCurrency] = useState<Currency>(CURRENCIES[0]);
+  const [transactions, setTransactions] = useState<Transaction[]>(() => 
+    loadFromStorage(STORAGE_KEYS.transactions, [])
+  );
+  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(() => 
+    loadFromStorage(STORAGE_KEYS.savingsGoals, defaultSavingsGoals)
+  );
+  const [achievements, setAchievements] = useState<Achievement[]>(() => 
+    loadFromStorage(STORAGE_KEYS.achievements, defaultAchievements)
+  );
+  const [currency, setCurrencyState] = useState<Currency>(() => 
+    loadFromStorage(STORAGE_KEYS.currency, CURRENCIES[0])
+  );
+
+  // Autosave transactions
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.transactions, transactions);
+  }, [transactions]);
+
+  // Autosave savings goals
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.savingsGoals, savingsGoals);
+  }, [savingsGoals]);
+
+  // Autosave achievements
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.achievements, achievements);
+  }, [achievements]);
+
+  // Autosave currency
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.currency, currency);
+  }, [currency]);
+
+  const setCurrency = (newCurrency: Currency) => {
+    setCurrencyState(newCurrency);
+  };
 
   const totalIncome = transactions
     .filter(t => t.type === 'income')
