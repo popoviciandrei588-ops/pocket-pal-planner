@@ -60,7 +60,7 @@ const Index = () => {
               See all <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
-          <TransactionList limit={5} />
+          <TransactionList limit={5} showEdit showDelete />
         </section>
       </main>
 
