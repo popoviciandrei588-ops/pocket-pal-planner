@@ -118,8 +118,8 @@ const AssistantPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="px-4 pt-12 pb-4 border-b border-border">
-        <div className="flex items-center gap-3">
+      <header className="px-4 pt-safe pb-4 border-b border-border">
+        <div className="pt-4 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <Bot className="h-6 w-6 text-primary" />
           </div>
@@ -195,7 +195,7 @@ const AssistantPage = () => {
       </ScrollArea>
 
       {/* Input Area */}
-      <div className="border-t border-border p-4 pb-24">
+      <div className="border-t border-border p-4 pb-28">
         <div className="flex gap-2">
           <Input
             value={input}

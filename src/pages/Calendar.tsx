@@ -38,11 +38,13 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-28">
       {/* Header */}
-      <header className="px-4 pt-12 pb-6">
-        <h1 className="text-2xl font-bold text-foreground">Calendar</h1>
-        <p className="text-muted-foreground text-sm">Track your daily transactions</p>
+      <header className="px-4 pt-safe pb-6">
+        <div className="pt-4">
+          <h1 className="text-2xl font-bold text-foreground">Calendar</h1>
+          <p className="text-muted-foreground text-sm">Track your daily transactions</p>
+        </div>
       </header>
 
       {/* Main Content */}
