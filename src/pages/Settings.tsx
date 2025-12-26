@@ -26,13 +26,14 @@ export default function SettingsPage() {
         title: 'Signed out',
         description: 'You have been signed out successfully.',
       });
-      navigate('/');
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.message || 'Failed to sign out',
+        description: error?.message || 'Failed to sign out',
         variant: 'destructive',
       });
+    } finally {
+      navigate('/');
     }
   };
 
