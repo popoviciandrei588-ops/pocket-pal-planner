@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -26,13 +26,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const signingOutRef = useRef(false);
 
   useEffect(() => {
     // Listener first (prevents missed auth events)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      // During sign-out, some environments can briefly re-emit the old session.
+      if (signingOutRef.current && session) return;
+
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Once we've observed a null session, we can resume normal listening.
+      if (!session) signingOutRef.current = false;
     });
 
     // Then check current session
@@ -66,25 +73,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    // We want a best-effort sign out:
-    // - Clear device session even if backend session is already missing
-    // - Avoid blocking UI with "session_not_found"
-    const { data } = await supabase.auth.getSession();
+    // Best-effort sign out:
+    // - some setups return session_not_found (403) even though local cleanup should still happen
+    signingOutRef.current = true;
 
-    // If there is no session in memory, just make sure storage is cleared.
-    if (!data.session) {
-      setSession(null);
-      setUser(null);
-      return;
-    }
-
-    const { error } = await supabase.auth.signOut({ scope: 'local' });
-
-    // Some environments can return session_not_found even though we still want to clear locally.
-    const code = (error as any)?.code;
-    const msg = (error as any)?.message as string | undefined;
-    if (error && code !== 'session_not_found' && !msg?.includes('session_not_found')) {
-      throw error;
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // ignore
     }
 
     // Force-clear stored token in localStorage (supabase-js storage key)
@@ -104,8 +100,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // ignore
     }
 
+    // Immediately reflect signed-out state in UI
     setSession(null);
     setUser(null);
+
+    // allow listener to process future events
+    setTimeout(() => {
+      signingOutRef.current = false;
+    }, 0);
   };
 
   return (

@@ -142,7 +142,15 @@ export default function SettingsPage() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleSignOut} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  <AlertDialogAction
+                    onClick={() => {
+                      // Avoid the dialog swallowing errors; force a full refresh after sign-out
+                      handleSignOut().finally(() => {
+                        window.location.href = '/';
+                      });
+                    }}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
                     Sign Out
                   </AlertDialogAction>
                 </AlertDialogFooter>
