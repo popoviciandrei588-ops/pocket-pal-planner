@@ -193,10 +193,12 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         .select('*')
         .single();
       
-      if (dbSettings) {
+      if (dbSettings && dbSettings.currency) {
         const foundCurrency = CURRENCIES.find(c => c.code === dbSettings.currency);
         if (foundCurrency) {
           setCurrencyState(foundCurrency);
+          // Also save to localStorage for consistency
+          saveToStorage(STORAGE_KEYS.currency, foundCurrency);
         }
       }
     } catch (error) {
@@ -373,11 +375,10 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     saveToStorage(STORAGE_KEYS.achievements, achievements);
   }, [achievements]);
 
+  // Always save currency to localStorage for persistence
   useEffect(() => {
-    if (!user) {
-      saveToStorage(STORAGE_KEYS.currency, currency);
-    }
-  }, [currency, user]);
+    saveToStorage(STORAGE_KEYS.currency, currency);
+  }, [currency]);
 
   useEffect(() => {
     if (!user) {
@@ -387,6 +388,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
   const setCurrency = async (newCurrency: Currency) => {
     setCurrencyState(newCurrency);
+    saveToStorage(STORAGE_KEYS.currency, newCurrency);
     if (user) {
       await supabase.from('user_settings').upsert({
         user_id: user.id,
