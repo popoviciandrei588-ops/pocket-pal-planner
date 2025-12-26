@@ -3,6 +3,7 @@ import { Plus, Minus } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { ScrollArea } from './ui/scroll-area';
 import { useFinance } from '@/context/FinanceContext';
 import { CATEGORIES, TransactionType } from '@/types/finance';
 import { cn } from '@/lib/utils';
@@ -50,104 +51,115 @@ export function AddTransactionSheet() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button size="icon" className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full shadow-lg glow">
-          <Plus className="w-6 h-6" />
+        <Button 
+          size="icon" 
+          className="fixed bottom-24 right-4 z-50 w-16 h-16 rounded-full shadow-xl glow"
+        >
+          <Plus className="w-7 h-7" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl glass-card border-t border-border/50">
-        <SheetHeader className="mb-6">
-          <SheetTitle className="text-xl font-bold">Add Transaction</SheetTitle>
+      <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl flex flex-col p-0">
+        <SheetHeader className="px-6 pt-6 pb-4 shrink-0">
+          <SheetTitle className="text-center text-xl">Add Transaction</SheetTitle>
         </SheetHeader>
 
-        {/* Type Toggle */}
-        <div className="flex gap-2 p-1 bg-secondary rounded-xl mb-6">
-          <button
-            onClick={() => { setType('expense'); setSelectedCategory(null); }}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all",
-              type === 'expense' 
-                ? 'bg-expense text-foreground' 
-                : 'text-muted-foreground'
-            )}
-          >
-            <Minus className="w-4 h-4" />
-            Expense
-          </button>
-          <button
-            onClick={() => { setType('income'); setSelectedCategory(null); }}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all",
-              type === 'income' 
-                ? 'bg-income text-primary-foreground' 
-                : 'text-muted-foreground'
-            )}
-          >
-            <Plus className="w-4 h-4" />
-            Income
-          </button>
-        </div>
-
-        {/* Amount Input */}
-        <div className="mb-6">
-          <label className="text-sm text-muted-foreground mb-2 block">Amount</label>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-muted-foreground">
-              {currency.symbol}
-            </span>
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="h-16 pl-12 text-3xl font-bold bg-secondary border-none"
-            />
-          </div>
-        </div>
-
-        {/* Description */}
-        <div className="mb-6">
-          <label className="text-sm text-muted-foreground mb-2 block">Description</label>
-          <Input
-            placeholder="What was this for?"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="h-12 bg-secondary border-none"
-          />
-        </div>
-
-        {/* Categories */}
-        <div className="mb-6">
-          <label className="text-sm text-muted-foreground mb-3 block">Category</label>
-          <div className="grid grid-cols-4 gap-3">
-            {categories.map((category) => (
+        <ScrollArea className="flex-1 px-6">
+          <div className="space-y-5 pb-6">
+            {/* Type Toggle */}
+            <div className="flex gap-2 p-1.5 bg-secondary rounded-xl">
               <button
-                key={category.name}
-                onClick={() => setSelectedCategory(category.name)}
+                onClick={() => { setType('expense'); setSelectedCategory(null); }}
                 className={cn(
-                  "flex flex-col items-center gap-2 p-3 rounded-xl transition-all",
-                  selectedCategory === category.name
-                    ? type === 'income' 
-                      ? 'bg-income/20 border-2 border-income' 
-                      : 'bg-expense/20 border-2 border-expense'
-                    : 'bg-secondary'
+                  "flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all",
+                  type === 'expense' 
+                    ? 'bg-expense text-white shadow-lg' 
+                    : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                <span className="text-2xl">{category.icon}</span>
-                <span className="text-xs font-medium">{category.name}</span>
+                <Minus className="w-4 h-4" />
+                Expense
               </button>
-            ))}
-          </div>
-        </div>
+              <button
+                onClick={() => { setType('income'); setSelectedCategory(null); }}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all",
+                  type === 'income' 
+                    ? 'bg-income text-white shadow-lg' 
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <Plus className="w-4 h-4" />
+                Income
+              </button>
+            </div>
 
-        {/* Submit Button */}
-        <Button 
-          onClick={handleSubmit} 
-          size="lg" 
-          className="w-full"
-          variant={type === 'income' ? 'default' : 'destructive'}
-        >
-          Add {type === 'income' ? 'Income' : 'Expense'}
-        </Button>
+            {/* Amount Input */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Amount</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-foreground">
+                  {currency.symbol}
+                </span>
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="pl-12 text-2xl font-bold h-14 bg-secondary border-0 rounded-xl"
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Description</label>
+              <Input
+                placeholder="What was this for?"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="h-12 bg-secondary border-0 rounded-xl"
+              />
+            </div>
+
+            {/* Categories */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-muted-foreground">Category</label>
+              <div className="grid grid-cols-4 gap-2.5">
+                {categories.map((category) => (
+                  <button
+                    key={category.name}
+                    onClick={() => setSelectedCategory(category.name)}
+                    className={cn(
+                      "flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all",
+                      selectedCategory === category.name
+                        ? type === 'income' 
+                          ? 'bg-income/20 ring-2 ring-income' 
+                          : 'bg-expense/20 ring-2 ring-expense'
+                        : 'bg-secondary hover:bg-muted'
+                    )}
+                  >
+                    <span className="text-2xl">{category.icon}</span>
+                    <span className="text-[11px] font-medium text-foreground leading-tight">{category.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ScrollArea>
+
+        {/* Fixed Submit Button */}
+        <div className="px-6 py-4 border-t border-border shrink-0 bg-background">
+          <Button 
+            onClick={handleSubmit} 
+            className={cn(
+              "w-full h-14 text-lg font-semibold rounded-xl",
+              type === 'income' ? "bg-income hover:bg-income/90" : "bg-expense hover:bg-expense/90"
+            )}
+          >
+            Add {type === 'income' ? 'Income' : 'Expense'}
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   );
