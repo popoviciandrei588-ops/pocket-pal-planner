@@ -61,6 +61,7 @@ export const CURRENCIES: Currency[] = [
   { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
   { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
   { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
+  { code: 'RON', symbol: 'lei', name: 'Romanian Leu' },
 ];
 
 export const CATEGORIES = {
