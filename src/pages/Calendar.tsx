@@ -81,7 +81,7 @@ export default function CalendarPage() {
         {/* Transactions for Selected Day */}
         <section>
           <h3 className="text-lg font-semibold text-foreground mb-3">Transactions</h3>
-          <TransactionList filterDate={selectedDate} showDelete />
+          <TransactionList filterDate={selectedDate} showDelete showEdit />
         </section>
       </main>
 
