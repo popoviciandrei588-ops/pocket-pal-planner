@@ -85,17 +85,28 @@ export default function SettingsPage() {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-foreground">Account</h3>
-              <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
+              <p className="text-sm text-muted-foreground truncate">
+                {user?.email || 'Not signed in'}
+              </p>
             </div>
           </div>
-          <Button
-            variant="outline"
-            className="w-full gap-2 text-destructive hover:text-destructive"
-            onClick={signOut}
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </Button>
+          {user ? (
+            <Button
+              variant="outline"
+              className="w-full gap-2 text-destructive hover:text-destructive"
+              onClick={signOut}
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </Button>
+          ) : (
+            <Link to="/auth">
+              <Button variant="outline" className="w-full gap-2">
+                <User className="w-4 h-4" />
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* App Info */}
