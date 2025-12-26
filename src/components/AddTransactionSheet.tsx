@@ -53,9 +53,10 @@ export function AddTransactionSheet() {
       <SheetTrigger asChild>
         <Button 
           size="icon" 
-          className="fixed bottom-24 right-4 z-50 w-16 h-16 rounded-full shadow-xl glow"
+          className="fixed z-50 w-14 h-14 rounded-full shadow-xl glow"
+          style={{ bottom: 'calc(5.5rem + env(safe-area-inset-bottom, 0px))', right: '1rem' }}
         >
-          <Plus className="w-7 h-7" />
+          <Plus className="w-6 h-6" />
         </Button>
       </SheetTrigger>
       <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl flex flex-col p-0">
