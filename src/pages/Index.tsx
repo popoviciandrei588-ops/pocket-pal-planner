@@ -5,19 +5,20 @@ import { BottomNav } from '@/components/BottomNav';
 import { SavingsGoalCard } from '@/components/SavingsGoalCard';
 import { IncomeExpenseChart } from '@/components/IncomeExpenseChart';
 import { ExpenseChart } from '@/components/ExpenseChart';
+import { SpendingInsights } from '@/components/SpendingInsights';
 import { useFinance } from '@/context/FinanceContext';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Repeat } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
-  const { savingsGoals } = useFinance();
+  const { savingsGoals, recurringTransactions } = useFinance();
 
   return (
     <div className="min-h-screen bg-background pb-28">
       {/* Header */}
       <header className="px-4 pt-safe pb-6">
         <div className="pt-4">
-          <p className="text-muted-foreground text-sm">Welcome back 👋</p>
+          <p className="text-muted-foreground text-sm">Welcome back</p>
           <h1 className="text-2xl font-bold text-foreground">Your Finances</h1>
         </div>
       </header>
@@ -27,11 +28,37 @@ const Index = () => {
         {/* Balance Card */}
         <BalanceCard />
 
+        {/* Spending Insights */}
+        <SpendingInsights />
+
         {/* Charts Section */}
         <section className="grid grid-cols-1 gap-4">
           <IncomeExpenseChart />
           <ExpenseChart />
         </section>
+
+        {/* Recurring Transactions Preview */}
+        {recurringTransactions.length > 0 && (
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <Repeat className="w-4 h-4 text-primary" />
+                Recurring
+              </h3>
+              <Link 
+                to="/recurring" 
+                className="flex items-center gap-1 text-sm text-primary hover:underline"
+              >
+                Manage <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="glass-card rounded-xl p-4">
+              <p className="text-muted-foreground text-sm">
+                {recurringTransactions.filter(r => r.isActive).length} active recurring transactions
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* Quick Savings Preview */}
         <section>

@@ -1,4 +1,5 @@
 export type TransactionType = 'income' | 'expense';
+export type RecurringFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
 export interface Transaction {
   id: string;
@@ -8,6 +9,21 @@ export interface Transaction {
   description: string;
   date: Date;
   icon: string;
+  isRecurring?: boolean;
+  recurringId?: string;
+}
+
+export interface RecurringTransaction {
+  id: string;
+  amount: number;
+  type: TransactionType;
+  category: string;
+  description: string;
+  icon: string;
+  frequency: RecurringFrequency;
+  startDate: Date;
+  nextDue: Date;
+  isActive: boolean;
 }
 
 export interface SavingsGoal {

@@ -11,6 +11,7 @@ import SavingsPage from "./pages/Savings";
 import AchievementsPage from "./pages/Achievements";
 import AssistantPage from "./pages/Assistant";
 import SettingsPage from "./pages/Settings";
+import RecurringPage from "./pages/Recurring";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/achievements" element={<AchievementsPage />} />
               <Route path="/assistant" element={<AssistantPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/recurring" element={<RecurringPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
